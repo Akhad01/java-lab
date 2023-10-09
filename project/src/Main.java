@@ -36,18 +36,11 @@ class Bouquet {
         flowers.add(flower);
     }
 
-    public void printFlowers() {
-        for (Flower fl : flowers) {
-            System.out.println("fl: " + fl.getName());
-        }
-    }
-
 
     public double calculatePrice() {
         double price = 0;
 
         for (Flower flower : flowers) {
-            System.out.println("flow" + flower);
             price += flower.getPrice();
         }
 
@@ -60,9 +53,15 @@ class Bouquet {
 
     public Flower findFlowerByStemLength(double minLength, double maxLength) {
         for (Flower flower : flowers) {
-            if (flower.getStemLength() >= minLength && flower.getStemLength() <= maxLength) {
-                return flower;
+            if (minLength < maxLength) {
+                if (flower.getStemLength() >= minLength && flower.getStemLength() <= maxLength) {
+                    return flower;
+                }
+            } else {
+                System.out.println("Ошибка при вводе");
+                return null;
             }
+
         }
 
         return null;
@@ -76,73 +75,92 @@ class Bouquet {
 
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args)  {
         Scanner scanner = new Scanner(System.in);
         Bouquet bouquet = new Bouquet();
 
+            while (true) {
+                System.out.println("Выберите действие:");
+                System.out.println("1. Добавить цветок");
+                System.out.println("2. Сортировка по уровню свежести");
+                System.out.println("3. Найти цветок по диапазону длин стебля");
+                System.out.println("4. Цена букета");
+                System.out.println("5. Выход");
 
+                int choice = 0;
+                try {
+                    choice = scanner.nextInt();
+                    scanner.nextLine();
+                } catch (InputMismatchException e) {
+                    System.out.println("Ошибка: Введите корректное число.");
+                    scanner.nextLine();
+                    continue;
+                }
 
-        while (true) {
-            System.out.println("Выберите действие:");
-            System.out.println("1. Добавить цветок");
-            System.out.println("2. Сортировка по уровню свежести");
-            System.out.println("3. Найти цветок по диапазону длин стебля");
-            System.out.println("4. Цена букета");
-            System.out.println("5. Выход");
+                if (true) {
+                    switch (choice) {
+                        case 1:
+                            System.out.println("Введите название цветка: ");
+                            String name = scanner.nextLine();
 
-            bouquet.printFlowers();
+                            int freshnessLevel;
+                            double price;
+                            double stemLength;
 
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // consume newline left-over
+                            try {
+                                System.out.println("Введите уровень свежести цветка: ");
+                                freshnessLevel = scanner.nextInt();
 
-            switch (choice) {
-                case 1:
-                    System.out.println("Введите название цветка: ");
-                    String name = scanner.nextLine();
+                                System.out.println("Введите цену цветка: ");
+                                price = scanner.nextDouble();
 
-                    System.out.println("Введите уровень свежести цветка: ");
-                    int freshnessLevel = scanner.nextInt();
+                                System.out.println("Введите длину стебля цветка: ");
+                                stemLength = scanner.nextDouble();
+                            } catch (InputMismatchException e) {
+                                System.out.println("Ошибка: Введите пожалуйста корректное число.");
+                                scanner.nextLine();
+                                continue;
+                            }
 
-                    System.out.println("Введите цену цветка: ");
-                    double price = scanner.nextDouble();
+                            Flower flower = new Flower(name, freshnessLevel, price, stemLength);
+                            bouquet.addFlower(flower);
+                            break;
+                        case 2:
+                            bouquet.sortByFreshness();
+                            System.out.println("Сортировка цветов по свежести: ");
+                            for (Flower f : bouquet.getFlowers()) {
+                                System.out.println(f.getName() + " - Уровень свежести: " + f.getFreshnessLevel());
+                            }
+                            break;
+                        case 3:
+                            try {
+                                System.out.println("Введите минимальную длину стебля для поиска цветка: ");
+                                double minLength = scanner.nextDouble();
 
-                    System.out.println("Введите длину стебля цветка: ");
-                    double stemLength = scanner.nextDouble();
+                                System.out.println("Введите максимальную длину стебля для поиска цветка: ");
+                                double maxLength = scanner.nextDouble();
+                                Flower foundFlower = bouquet.findFlowerByStemLength(minLength, maxLength);
 
-                    Flower flower = new Flower(name, freshnessLevel, price, stemLength);
-                    bouquet.addFlower(flower);
-
-                    break;
-                case 2:
-                    bouquet.sortByFreshness();
-                    System.out.println("Сортировка цветов по свежести: ");
-                    for (Flower f : bouquet.getFlowers()) {
-                        System.out.println(f.getName() + " - Уровень свежести: " + f.getFreshnessLevel());
+                                if (foundFlower != null) {
+                                    System.out.println("Найденный цветок: " + foundFlower.getName());
+                                } else {
+                                    System.out.println("Цветок в заданном диапазоне не найден.");
+                                }
+                            } catch (InputMismatchException e) {
+                                System.out.println("Ошибка: Введите пожалуйста корректное число.");
+                                scanner.nextLine();
+                            }
+                            break;
+                        case 4:
+                            System.out.println("Цена букета: " + bouquet.calculatePrice());
+                            break;
+                        case 5:
+                            System.exit(0);
                     }
-                    break;
-                case 3:
-                    System.out.println("Введите минимальную длину стебля для поиска цветка: ");
-                    double minLength = scanner.nextDouble();
-
-                    System.out.println("Введите максимальную длину стебля для поиска цветка: ");
-                    double maxLength = scanner.nextDouble();
-
-                    Flower foundFlower = bouquet.findFlowerByStemLength(minLength, maxLength);
-
-                    if (foundFlower != null) {
-                        System.out.println("Найденный цветок: " + foundFlower.getName());
-                    } else {
-                        System.out.println("Цветок в заданном диапазоне не найден.");
-                    }
-                    break;
-                case 4:
-                    System.out.println("Цена букета: " + bouquet.calculatePrice());
-                    break;
-                case 5:
-                    System.exit(0);
-
+                }
             }
-        }
+
+
     }
 }
 
